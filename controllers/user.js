@@ -12,7 +12,16 @@ var controller = {
             nombre:   req.body.nombre,
             telefono: req.body.apellido,
             email:    req.body.email,
-            trabajo: []
+            trabajo: [{
+                archivo: '',
+                nombre: '',
+                descripcion: '',
+                materia: '',
+                dia: '',
+                mes: '',
+                year: '1',
+                pago: ''           
+            }]
         };
 
         body.password = bcrypt.hashSync(req.body.password, salt);
@@ -24,7 +33,7 @@ var controller = {
 
                 const userDB = await user.create(body);
                 
-                res.status(200).json(userDB);
+                res.status(200).send(userDB);
 
             }catch(error){
                 return res.status(500).json({
@@ -110,7 +119,7 @@ var controller = {
     
                     let token = jwt.sign(dataReturn, process.env.SECRET_KEY,{expiresIn:  60 * 60 * 24 *30});
     
-                    return res.send(token);
+                    return res.status(200).send(token);
     
                 }else{
                     return res.json({error: 'Passowrd incorrecta Mor'});

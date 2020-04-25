@@ -8,8 +8,8 @@ const trabajoSchema = new Schema({
     descripcion: {type: String},
     archivo:     {type: String},
     materia:     {type: String},
-    dia:         {type: String, required: true},
-    mes:         {type: String, required: true},
+    dia:         {type: String},
+    mes:         {type: String},
     year:        {type: String, required: true},
     pago:        {type: String}
 });
