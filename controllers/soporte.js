@@ -11,7 +11,8 @@ var controller = {
         try{
             const pqrDB = await soporte.create(body);
             
-            res.status(200).json(pqrDB);
+            return res.status(200).json(pqrDB);
+        
         }catch(error){
             return res.status(500).json({
                 mensaje: 'Error al hacer el PQR',
@@ -24,12 +25,12 @@ var controller = {
             const pqrsDB = await soporte.find();
 
             if(pqrsDB != ''){
-                res.status(200).json(pqrsDB);
-            }else{
-                res.status(400).json({
-                    mensaje: 'No hay ni monda Rey'
-                });
+                return res.status(200).json(pqrsDB);
             }
+            
+            return res.status(404).json({
+                mensaje: 'No hay ninguna PQR'
+            });
 
         }catch(error){
             return res.status(500).json({

@@ -1,11 +1,13 @@
 import user from '../models/user';
 import bcrypt  from 'bcrypt';
 import jwt     from 'jsonwebtoken';
+//import path    from 'path';
 const salt = 10;
 
 process.env.SECRET_KEY = 'secret';
 
 var controller = {
+
     registerUser: async(req, res) => {
         
         const body = {
@@ -37,19 +39,77 @@ var controller = {
 
             }catch(error){
                 return res.status(500).json({
-                    mensaje: 'Error rey',
+                    mensaje: 'Error del servidor',
                     error
                 });
             }
-        }else{
-            return res.status(400).json({
-                mensaje: 'Rey el correo ya existe'
-            });
         }
+        
+        return res.status(404).json({
+            mensaje: 'El email ya está registrado'
+        });
+    
     
     },
 
-    //Agregar trabajos
+    loginUser: async(req, res) => {
+
+        const email    = req.body.email;
+        const password = req.body.password;
+
+        const userExist = await user.findOne({ email: email });
+ 
+        try{
+            if(userExist){
+                if(bcrypt.compareSync(password, userExist.password)){
+    
+                    const dataReturn = {
+                        _id:      userExist._id,
+                        nombre:   userExist.nombre,
+                        apellido: userExist.apellido,
+                        email:    userExist.email,
+                        trabajo:  userExist.trabajo
+                    };
+    
+                    let token = jwt.sign(dataReturn, process.env.SECRET_KEY,{expiresIn:  60 * 60 * 24 *30});
+    
+                    return res.status(200).json(token);
+    
+                }
+                
+                return res.status(404).json({error: 'Passowrd incorrecta'});
+            
+            }
+            
+            return res.status(404).json({error: 'El usario no está registrado Rey'});
+
+        }catch(error){
+            return res.status(500).json({
+                mensaje: 'Error rey',
+                error
+            });
+        }
+    },
+
+    getUsers: async(req, res) => {
+        try{
+            const usersDB = await user.find();
+            
+            if(usersDB){
+                return res.status(200).send(usersDB);
+            }
+
+            return res.status(404).json({
+                mesagge: 'No hay usuarios registrados'
+            });
+
+        }catch(error){
+            return res.status(500).json({
+                mesagge: 'Error del servidor'
+            });
+        }
+    },
+
     newWork: async(req, res) => {
         const newTrabajo = {
             archivo:     '',
@@ -83,81 +143,28 @@ var controller = {
                 const saveWorkDB = await userExist.save();
 
                 if(saveWorkDB){
-                    return res.status(200).json(userExist.trabajo);
+
+                    const lengthWork = saveWorkDB.trabajo.length;
+
+                    res.status(200).json(saveWorkDB.trabajo[lengthWork-1]);
+                    
                 }
 
-                return res.status(401).json({
+                return res.status(400).json({
                     mesagge: 'No se puedo registrar el trabajo'
                 });
 
             }catch(error){
-                return res.json({
-                    mesagge: 'pailas mor',
+                return res.status(500).json({
+                    mesagge: 'Error del servidor',
                 });
             }
         }
 
     },
 
-    loginUser: async(req, res) => {
-        const email    = req.body.email;
-        const password = req.body.password;
-
-        const userExist = await user.findOne({ email: email });
- 
-        try{
-            if(userExist){
-                if(bcrypt.compareSync(password, userExist.password)){
-    
-                    const dataReturn = {
-                        _id:      userExist._id,
-                        nombre:   userExist.nombre,
-                        apellido: userExist.apellido,
-                        email:    userExist.email,
-                        trabajo:  userExist.trabajo
-                    };
-    
-                    let token = jwt.sign(dataReturn, process.env.SECRET_KEY,{expiresIn:  60 * 60 * 24 *30});
-    
-                    return res.status(200).send(token);
-    
-                }else{
-                    return res.json({error: 'Passowrd incorrecta Mor'});
-                }
-            }else{
-                return res.json({error: 'El usario no está registrado Rey'});
-            }
-        }catch(error){
-            return res.status(500).json({
-                mensaje: 'Error rey',
-                error
-            });
-        }
-    },
-
-    //Información del usuario
-    //Mirar nuevamente cómo funciona, donde lo utiloz y para qué!!!!!
-    profileUser: async(req, res) => {
-        var decode = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
-
-        try{
-            var userExist = await user.findOne({_id: decode._id})
-
-            if(userExist){
-                res.json(userExist);
-            }else{
-                res.send('Rey no existes...');
-            }
-        }catch(error){
-            return res.status(500).json({
-                mensaje: 'Error rey',
-                error
-            });
-        }
-    },
-
-    //Subir archivos
     uploadFile: async(req, res) => {
+
         var userId   = req.params.id;
         var workId   = req.params.work;
 
@@ -168,56 +175,54 @@ var controller = {
 
             var fileName  = fileSplit[1];
            
+            var fileSize  = req.files.archivo.size;
+
             var userDB = await user.findById({ _id: userId });
-
-           
-            try{
-                if(userDB){
-                    
-                    const findWork = await userDB.trabajo.id(workId);
-                    
-                    findWork.set({
-                        archivo: fileName
-                    });
-                    
-                    userDB.save();
-
-                    return res.status(200).json(userDB);
-
-                }else{
-                    return res.status(200).json({mensaje:'no hay nada'});
-                }
-            }catch(error){
-                return res.status(404).send({
-                    message: 'pailas mor'
-                });
-            }
-
-        }else{
-            return res.status(500).send({
-                message: 'Unlucky rey'
-            });
-        }
-    },
-
-    getUsers: async(req, res) => {
-        try{
-            const usersDB = await user.find();
             
-            if(usersDB){
-                return res.status(200).send(usersDB);
+            if(fileSize > 0){
+
+                try{
+                    if(userDB){
+                        
+                        if(fileName){
+                            const findWork = await userDB.trabajo.id(workId);
+                        
+                            const addFile =  await findWork.set({
+                                archivo: fileName
+                            });
+                    
+                            if(addFile){
+                                
+                                const saveWorkUser = await userDB.save();
+                            
+                                if(saveWorkUser){
+                                    return res.status(200).json(findWork);
+                                }
+        
+                            }
+
+                            return res.status(400).json({mensaje:'No se puedo agregar el archivo'});
+                        }
+    
+                    }
+                    
+                    return res.status(400).json({mensaje:'Usuario no registrado'});
+                    
+                }catch(error){
+                    return res.status(500).send({
+                        message: 'Error '
+                    });
+                }
             }
-
-            return res.status(400).json({
-                mesagge: 'No hay usuarios registrados'
+            
+            return res.status(200).json({
+                message: 'No selecciono el archivo'
             });
-
-        }catch(error){
-            return res.status(500).json({
-                mesagge: 'Error en la petición'
-            });
+            
         }
+
     }
+
 }
 
 export default controller;
