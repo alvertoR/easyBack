@@ -12,5 +12,6 @@ router.post('/login', controllersUser.loginUser);
 router.post('/upload-file/:id/:work', multipartMiddleware, controllersUser.uploadFile);
 router.post('/new-work', controllersUser.newWork);
 router.get('/get-users', controllersUser.getUsers);
+router.get('/get-works', controllersUser.getWorks);
 
 module.exports = router;

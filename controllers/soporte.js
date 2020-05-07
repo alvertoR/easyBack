@@ -14,10 +14,7 @@ var controller = {
             return res.status(200).json(pqrDB);
         
         }catch(error){
-            return res.status(500).json({
-                mensaje: 'Error al hacer el PQR',
-                error
-            });
+            return res.status(500).json('Error al realizar la PQR, no llego el email');
         }
     },
     getPqrs: async(req, res) => {

@@ -110,6 +110,33 @@ var controller = {
         }
     },
 
+    getWorks: async(req, res) => {
+        try{
+            var works = [];
+
+            const worksDB = await user.find();
+
+            worksDB.forEach(usuario => {
+                works.push(usuario.trabajo);
+            })
+
+            if(worksDB){
+                res.status(200).json({
+                    trabajos: works
+                });
+            }
+
+            return res.status(400).json({
+                mesagge: 'Trabajos no encontrados'
+            })
+
+        }catch(error){
+            res.status(500).json({
+                mesagge: 'Error del servidor'
+            })
+        }
+    },
+
     newWork: async(req, res) => {
         const newTrabajo = {
             archivo:     '',
