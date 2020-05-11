@@ -205,9 +205,7 @@ var controller = {
             var fileSize  = req.files.archivo.size;
 
             var userDB = await user.findOne({_id: id});
-
-            return res.json(userDB);
-            
+ 
             if(fileSize > 0){
 
                 try{
