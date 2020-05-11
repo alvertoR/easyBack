@@ -204,7 +204,7 @@ var controller = {
            
             var fileSize  = req.files.archivo.size;
 
-            var userDB = await user.findById({ _id: userId });
+            var userDB = await user.findById(userId);
             
             if(fileSize > 0){
 
