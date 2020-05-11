@@ -206,7 +206,7 @@ var controller = {
 
             var userDB = await user.findOne({_id: id});
 
-            return res.json(id);
+            return res.json(userDB);
             
             if(fileSize > 0){
 
