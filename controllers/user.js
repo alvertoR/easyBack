@@ -192,7 +192,7 @@ var controller = {
 
     uploadFile: async(req, res) => {
 
-        var userId   = req.params.id;
+        var id   = req.params.id;
         var workId   = req.params.work;
 
         if(req.files){
@@ -204,7 +204,9 @@ var controller = {
            
             var fileSize  = req.files.archivo.size;
 
-            var userDB = await user.findById(userId);
+            var userDB = await user.findOne({_id: id});
+
+            return res.json(id);
             
             if(fileSize > 0){
 
