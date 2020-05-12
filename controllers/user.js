@@ -198,10 +198,16 @@ var controller = {
         if(req.files){
             var filePath  = req.files.archivo.path;
             
+            console.log(filePath);
+
             var fileSplit = filePath.split('\\');
+
+            console.log(fileSplit);
 
             var fileName  = fileSplit[1];
            
+            console.log(fileName);
+
             var fileSize  = req.files.archivo.size;
 
             var userDB = await user.findOne({_id: id});
@@ -210,7 +216,7 @@ var controller = {
 
                 try{
                     if(userDB){
-                        console.log(fileName);
+                        
                         if(fileName){
                             const findWork = await userDB.trabajo.id(workId);
                         
@@ -227,7 +233,7 @@ var controller = {
                                 }
         
                             }
-
+                            
                             return res.status(400).json({mensaje:'No se puedo agregar el archivo'});
                         }
     
