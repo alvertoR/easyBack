@@ -198,16 +198,10 @@ var controller = {
         if(req.files){
             var filePath  = req.files.archivo.path;
             
-            console.log(filePath);
-
-            var fileSplit = filePath.split('/.*[\/|\\]/');
-
-            console.log(fileSplit);
+            var fileSplit = filePath.split('/');
 
             var fileName  = fileSplit[1];
            
-            console.log(fileName);
-
             var fileSize  = req.files.archivo.size;
 
             var userDB = await user.findOne({_id: id});
