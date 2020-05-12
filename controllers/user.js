@@ -200,7 +200,7 @@ var controller = {
             
             console.log(filePath);
 
-            var fileSplit = filePath.split('\\');
+            var fileSplit = filePath.split('/.*[\/|\\]/');
 
             console.log(fileSplit);
 
