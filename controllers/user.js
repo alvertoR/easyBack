@@ -205,12 +205,12 @@ var controller = {
             var fileSize  = req.files.archivo.size;
 
             var userDB = await user.findOne({_id: id});
- 
+            
             if(fileSize > 0){
 
                 try{
                     if(userDB){
-                        
+                        console.log(fileName);
                         if(fileName){
                             const findWork = await userDB.trabajo.id(workId);
                         
