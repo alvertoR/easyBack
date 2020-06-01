@@ -11,10 +11,10 @@ const users     = require('./rutas/user');
 const app = express();
 
 // Conexión local
-//const uri     = 'mongodb://localhost:27017/easywork';
+const uri     = 'mongodb://localhost:27017/easywork';
 
 // Conexión en la nube
-const uri = 'mongodb+srv://userWork:ZoYBegAe86Y1TQtF@easywork-5ktwo.mongodb.net/easywork?retryWrites=true&w=majority'
+//const uri = 'mongodb+srv://userWork:ZoYBegAe86Y1TQtF@easywork-5ktwo.mongodb.net/easywork?retryWrites=true&w=majority'
 
 const opction = {
     useNewUrlParser:    true,

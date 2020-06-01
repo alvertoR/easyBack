@@ -13,5 +13,7 @@ router.post('/upload-file/:id/:work', multipartMiddleware, controllersUser.uploa
 router.post('/new-work', controllersUser.newWork);
 router.get('/get-users', controllersUser.getUsers);
 router.get('/get-works', controllersUser.getWorks);
+router.get('/get-file/:file', controllersUser.getFile);
+router.get('/get-work/:id/:work', controllersUser.getWork);
 
 module.exports = router;

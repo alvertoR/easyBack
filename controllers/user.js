@@ -1,7 +1,9 @@
-import user from '../models/user';
-import bcrypt  from 'bcrypt';
-import jwt     from 'jsonwebtoken';
-//import path    from 'path';
+import user   from '../models/user';
+import bcrypt from 'bcrypt';
+import jwt    from 'jsonwebtoken';
+import path   from 'path';
+import fs     from 'fs';
+
 const salt = 10;
 
 process.env.SECRET_KEY = 'secret';
@@ -198,7 +200,7 @@ var controller = {
         if(req.files){
             var filePath  = req.files.archivo.path;
             
-            var fileSplit = filePath.split('/');
+            var fileSplit = filePath.split('\\');
 
             var fileName  = fileSplit[1];
            
@@ -242,12 +244,60 @@ var controller = {
                 }
             }
             
-            return res.status(200).json({
+            return res.status(400).json({
                 message: 'No selecciono el archivo'
             });
             
         }
 
+    },
+
+    getFile: async(req, res) => {
+        var file = req.params.file;
+
+        var path_file = `./uploads/${file}`;
+
+        fs.exists(path_file, (exists) => {
+            if(exists){
+                return res.status(200).sendFile(path.resolve(path_file));
+            }else{
+                return res.status(404).json({
+                    mensaje:'no existe el archivo'
+                })
+            }
+
+        });
+
+    },
+
+    getWork: async(req, res) => {
+        
+        var iduser = req.params.id;
+        var idWork = req.params.work;
+        
+        try{
+            
+            const userDB = await user.findById({_id: iduser});
+
+            if(userDB){
+                const workDB = await userDB.trabajo.id({_id: idWork});
+                
+                if(workDB){
+
+                    return res.status(200).json(workDB);
+                }
+            }
+
+            return res.status(400).json({
+                mensaje: 'Error el id del trabajo no está en la base de datos'
+            })
+
+        }catch(error){
+            return res.status(500).json({
+                mensaje: 'Error del servidor',
+                error
+            })
+        }
     }
 
 }
